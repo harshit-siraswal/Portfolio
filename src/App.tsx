@@ -921,40 +921,37 @@ export default function App() {
                   </div>
 
                   {/* CREDENTIAL: AWS Certified AI Practitioner */}
-                  <a 
-                    href="/AWS_Certified_AI_Practitioner_certificate.pdf" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="p-5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 transition-all flex gap-4 text-left group"
+                  <button 
+                    onClick={() => openLightbox(['/AWS_Certified_AI_Practitioner_certificate.pdf'], 0)}
+                    className="p-5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 transition-all flex gap-4 text-left group w-full cursor-pointer focus:outline-none focus:ring-1 focus:ring-amber-500/50"
                   >
                     <Award className="text-amber-400 shrink-0 mt-1 group-hover:scale-110 transition-transform" size={20} />
-                    <div>
+                    <div className="flex-1">
                       <div className="flex items-center gap-1.5">
                         <h4 className="text-sm font-semibold text-foreground">AWS Certified AI Practitioner</h4>
                         <ExternalLink size={12} className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
                       <p className="text-xs text-muted-foreground mt-1">AWS Academy / Cloud Specialist</p>
-                      <p className="text-xs text-amber-400 font-semibold mt-1">Credential PDF Available</p>
+                      <p className="text-xs text-amber-400 font-semibold mt-1">Click to view Certificate</p>
                     </div>
-                  </a>
+                  </button>
 
                   {/* ACHIEVEMENT: Innotech '25 */}
-                  <a 
-                    href="https://www.linkedin.com/feed/update/urn:li:activity:7398431631893663744/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 transition-all flex gap-4 text-left group"
+                  <button 
+                    onClick={() => openLightbox(['/innotech_2025.png'], 0)}
+                    className="p-5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 transition-all flex gap-4 text-left group w-full cursor-pointer focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
                   >
-                    <Award className="text-muted-foreground shrink-0 mt-1" size={20} />
-                    <div>
+                    <Award className="text-emerald-400 shrink-0 mt-1 group-hover:scale-110 transition-transform" size={20} />
+                    <div className="flex-1">
                       <div className="flex items-center gap-1.5">
                         <h4 className="text-sm font-semibold text-foreground">Innotech &apos;25</h4>
                         <ExternalLink size={12} className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
                       <p className="text-xs text-muted-foreground mt-1">KIET Ghaziabad (Hackathon/Expo)</p>
                       <p className="text-xs text-emerald-400 font-mono mt-1">First-Year Innovator</p>
+                      <p className="text-xs text-emerald-400 font-semibold mt-1">Click to view Certificate</p>
                     </div>
-                  </a>
+                  </button>
 
                   {/* ACHIEVEMENT: HackO'Clock 2.0 */}
                   <a 
@@ -1288,7 +1285,13 @@ export default function App() {
             )}
 
             {/* Media Rendering */}
-            {selectedImage.endsWith('.mp4') ? (
+            {selectedImage.endsWith('.pdf') ? (
+              <iframe 
+                src={`${selectedImage}#toolbar=0&navpanes=0&scrollbar=1`}
+                className="w-full h-[75vh] rounded-2xl border border-white/10 bg-zinc-950"
+                title="Certificate PDF Viewer"
+              />
+            ) : selectedImage.endsWith('.mp4') ? (
               <video 
                 autoPlay 
                 controls 
