@@ -93,14 +93,14 @@ def create_resume(output_path="public/Harshit_Pal_Resume.pdf"):
     story.append(edu_table)
     story.append(Spacer(1, 2))
 
-    # TECHNICAL PROJECTS
+    # TECHNICAL PROJECTS (Only BIS, StudyShare, ReturnShield AI, ESP32 IoT Mesh, Code Analyser)
     add_section_header('Technical Projects')
 
     # Project 1: BIS Recommendation Engine
     p1_header = Table([
         [
             Paragraph('<b>BIS Standards Recommendation Engine</b> | <i>AI / Hybrid RAG Retrieval Engine</i>', item_title_bold),
-            Paragraph('<a href="https://bis-standards-recommendation-engine-livid.vercel.app/" color="#0284c7">Live Demo</a> | <a href="https://github.com/harshit-siraswal" color="#0284c7">GitHub</a>', item_right_style)
+            Paragraph('<a href="https://bis-standards-recommendation-engine-livid.vercel.app/" color="#0284c7">Live Demo</a> | <a href="https://github.com/harshit-siraswal/BIS-Standards-Recommendation-Engine" color="#0284c7">GitHub</a>', item_right_style)
         ]
     ], colWidths=[420, 144])
     p1_header.setStyle(TableStyle([('LEFTPADDING', (0,0), (-1,-1), 0), ('RIGHTPADDING', (0,0), (-1,-1), 0), ('TOPPADDING', (0,0), (-1,-1), 0), ('BOTTOMPADDING', (0,0), (-1,-1), 0)]))
@@ -122,41 +122,41 @@ def create_resume(output_path="public/Harshit_Pal_Resume.pdf"):
     story.append(Paragraph('• <b>Automated OCR Ingestion:</b> Shipped an n8n webhook pipeline integrating Tesseract OCR for automated fee receipt parsing (98.4% accuracy, 1.2s latency) and dynamic encrypted QR student gate pass verification.', bullet_style))
     story.append(Spacer(1, 1.5))
 
-    # Project 3: Memori Labs
+    # Project 3: ReturnShield AI (Innogeeks Hackathon)
     p3_header = Table([
-        [
-            Paragraph('<b>Memori Labs</b> | <i>Agent-Native Memory Infrastructure (SQL + LLM State Layer)</i>', item_title_bold),
-            Paragraph('<a href="https://memorilabs.ai" color="#0284c7">memorilabs.ai</a> | <a href="https://github.com/harshit-siraswal/Memori" color="#0284c7">GitHub</a>', item_right_style)
-        ]
-    ], colWidths=[420, 144])
-    p3_header.setStyle(TableStyle([('LEFTPADDING', (0,0), (-1,-1), 0), ('RIGHTPADDING', (0,0), (-1,-1), 0), ('TOPPADDING', (0,0), (-1,-1), 0), ('BOTTOMPADDING', (0,0), (-1,-1), 0)]))
-    story.append(p3_header)
-    story.append(Paragraph('• <b>State Management for Agents:</b> Architected an LLM-agnostic, SQL-native memory layer capturing agent execution graphs, tool outputs, and user sessions into queryable structured persistent state.', bullet_style))
-    story.append(Spacer(1, 1.5))
-
-    # Project 4: ReturnShield AI (Innogeeks Hackathon)
-    p4_header = Table([
         [
             Paragraph('<b>ReturnShield AI</b> (Innogeeks Hackathon) | <i>Python, scikit-learn, React 19, Vite, Edge</i>', item_title_bold),
             Paragraph('<a href="https://returnsheild-ai.vercel.app" color="#0284c7">returnsheild-ai.vercel.app</a> | <a href="https://github.com/harshit-siraswal/ReturnsheildAI" color="#0284c7">GitHub</a>', item_right_style)
         ]
     ], colWidths=[420, 144])
-    p4_header.setStyle(TableStyle([('LEFTPADDING', (0,0), (-1,-1), 0), ('RIGHTPADDING', (0,0), (-1,-1), 0), ('TOPPADDING', (0,0), (-1,-1), 0), ('BOTTOMPADDING', (0,0), (-1,-1), 0)]))
-    story.append(p4_header)
-    story.append(Paragraph('• <b>ML Return Risk Classifier:</b> Built an e-commerce fraud and return prevention system at Innogeeks Hackathon using trained scikit-learn classifiers with real-time order risk scoring (95.0% accuracy, 45ms inference) and revenue loss exposure estimation.', bullet_style))
+    p3_header.setStyle(TableStyle([('LEFTPADDING', (0,0), (-1,-1), 0), ('RIGHTPADDING', (0,0), (-1,-1), 0), ('TOPPADDING', (0,0), (-1,-1), 0), ('BOTTOMPADDING', (0,0), (-1,-1), 0)]))
+    story.append(p3_header)
+    story.append(Paragraph('• <b>ML Return Risk Classifier:</b> Built an e-commerce fraud and return prevention platform at Innogeeks Hackathon using trained scikit-learn classifiers with real-time order risk scoring (95.0% accuracy, 45ms latency) and revenue impact estimation.', bullet_style))
     story.append(Paragraph('• <b>Interactive Merchant Intelligence:</b> Implemented a high-performance React 19 + Geist design dashboard with automated action stacks, 12-week risk trend visualization, and Vercel Edge Copilot.', bullet_style))
     story.append(Spacer(1, 1.5))
 
-    # Project 5: Hardware & IoT Mesh
-    p5_header = Table([
+    # Project 4: Hardware & IoT Mesh
+    p4_header = Table([
         [
             Paragraph('<b>ESP32 Smart Infrastructure & IoT Mesh Networks</b> | <i>C++, ESP-NOW, MQTT, FreeRTOS</i>', item_title_bold),
             Paragraph('<a href="https://wokwi.com/projects/446450435316383745" color="#0284c7">Wokwi Sim</a> | <a href="https://harshitpal.in" color="#0284c7">Demo</a>', item_right_style)
         ]
     ], colWidths=[420, 144])
+    p4_header.setStyle(TableStyle([('LEFTPADDING', (0,0), (-1,-1), 0), ('RIGHTPADDING', (0,0), (-1,-1), 0), ('TOPPADDING', (0,0), (-1,-1), 0), ('BOTTOMPADDING', (0,0), (-1,-1), 0)]))
+    story.append(p4_header)
+    story.append(Paragraph('• <b>Zero-GSM Urban Mesh:</b> Developed low-power municipal manhole monitoring hardware utilizing ESP32, HX711 load cells, and ultrasonic sensors communicating over self-healing ESP-NOW peer-to-peer mesh relays.', bullet_style))
+    story.append(Spacer(1, 1.5))
+
+    # Project 5: Code Analyser Sandbox
+    p5_header = Table([
+        [
+            Paragraph('<b>Code Analyser Platform</b> | <i>React, FastAPI, Monaco Editor, Judge0, AST Parser</i>', item_title_bold),
+            Paragraph('<a href="https://code-analyser-web.vercel.app/" color="#0284c7">code-analyser-web.vercel.app</a> | <a href="https://github.com/harshit-siraswal/code_analyser" color="#0284c7">GitHub</a>', item_right_style)
+        ]
+    ], colWidths=[420, 144])
     p5_header.setStyle(TableStyle([('LEFTPADDING', (0,0), (-1,-1), 0), ('RIGHTPADDING', (0,0), (-1,-1), 0), ('TOPPADDING', (0,0), (-1,-1), 0), ('BOTTOMPADDING', (0,0), (-1,-1), 0)]))
     story.append(p5_header)
-    story.append(Paragraph('• <b>Zero-GSM Urban Mesh:</b> Developed low-power municipal manhole monitoring hardware utilizing ESP32, HX711 load cells, and ultrasonic sensors communicating over self-healing ESP-NOW peer-to-peer mesh relays.', bullet_style))
+    story.append(Paragraph('• <b>Automated Code Evaluation:</b> Created practice compiler sandbox utilizing Abstract Syntax Tree (AST) parsing and Judge0 execution pipeline to classify logic quality, syntax anomalies, and big-O computational complexity.', bullet_style))
     story.append(Spacer(1, 2))
 
     # TECHNICAL SKILLS
@@ -165,7 +165,7 @@ def create_resume(output_path="public/Harshit_Pal_Resume.pdf"):
         [Paragraph('<b>Languages:</b>', skill_label), Paragraph('TypeScript, JavaScript, Python, Dart, C++, C, SQL, HTML5/CSS3', skill_body)],
         [Paragraph('<b>Frontend & Mobile:</b>', skill_label), Paragraph('React, Next.js, Flutter, Tailwind CSS, shadcn/ui, Vite, Framer Motion', skill_body)],
         [Paragraph('<b>Backend & APIs:</b>', skill_label), Paragraph('Node.js, Express, NestJS, FastAPI (Python), Prisma ORM, RESTful APIs, WebSockets', skill_body)],
-        [Paragraph('<b>AI, Cloud & Data:</b>', skill_label), Paragraph('FAISS Vector DB, Hybrid RAG, BM25, PostgreSQL, Neon Serverless, Redis, Docker, Vercel, Railway, Cloudflare, Linux, n8n', skill_body)],
+        [Paragraph('<b>AI, Cloud & Data:</b>', skill_label), Paragraph('FAISS Vector DB, Hybrid RAG, BM25, scikit-learn, PostgreSQL, Neon Serverless, Redis, Docker, Vercel, Railway, Cloudflare, Linux, n8n', skill_body)],
         [Paragraph('<b>Hardware & IoT:</b>', skill_label), Paragraph('ESP32, ESP-NOW Mesh Protocol, Arduino, MQTT, FreeRTOS, Sensor Interfacing (PIR, Ultrasonic, Load Cells)', skill_body)]
     ]
     skills_table = Table(skills_data, colWidths=[115, 449])
