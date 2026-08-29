@@ -19,7 +19,9 @@ import {
   Send,
   CheckCircle,
   Menu,
-  Maximize
+  Maximize,
+  Sparkles,
+  Shield
 } from 'lucide-react'
 
 export default function App() {
@@ -29,8 +31,9 @@ export default function App() {
   const [lightboxImages, setLightboxImages] = useState<string[]>([])
   const [lightboxIndex, setLightboxIndex] = useState(0)
 
-  // Active hash overlay project
+  // Active hash overlay project or blog
   const [selectedProjectHash, setSelectedProjectHash] = useState<string | null>(null)
+  const [selectedBlogId, setSelectedBlogId] = useState<string | null>(null)
 
   // Video playback states
   const [overlayMuted, setOverlayMuted] = useState(true)
@@ -47,6 +50,9 @@ export default function App() {
 
   // Skill category state
   const [selectedSkillCategory, setSelectedSkillCategory] = useState('all')
+
+  // Project category filter
+  const [selectedProjectCategory, setSelectedProjectCategory] = useState('all')
 
   // StudyShare Screenshots list
   const studyshareScreenshots = [
@@ -66,26 +72,39 @@ export default function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash
-      const validHashes = [
+      const validProjectHashes = [
         '#bis-engine',
         '#studyshare',
+        '#memori',
+        '#returnshield-ai',
+        '#mini-siem',
+        '#careagent',
+        '#core-inventory',
         '#code-analyser',
         '#buildsmart',
         '#manhole-mesh',
         '#stair-lighting',
         '#weather-tech'
       ]
-      if (hash && validHashes.includes(hash)) {
+      
+      if (hash.startsWith('#article-')) {
+        const blogId = hash.replace('#article-', '')
+        setSelectedBlogId(blogId)
+        setSelectedProjectHash(null)
+        document.body.style.overflow = 'hidden'
+      } else if (hash && validProjectHashes.includes(hash)) {
         setSelectedProjectHash(hash)
-        document.body.style.overflow = 'hidden' // Stop body scrolling when overlay is open
+        setSelectedBlogId(null)
+        document.body.style.overflow = 'hidden'
       } else {
         setSelectedProjectHash(null)
-        document.body.style.overflow = '' // Restore body scroll
+        setSelectedBlogId(null)
+        document.body.style.overflow = ''
       }
     }
 
     window.addEventListener('hashchange', handleHashChange)
-    handleHashChange() // check on load
+    handleHashChange()
 
     return () => {
       window.removeEventListener('hashchange', handleHashChange)
@@ -96,7 +115,8 @@ export default function App() {
   interface Project {
     id: string
     title: string
-    category: string
+    category: 'ai' | 'fullstack' | 'hardware' | 'security'
+    categoryLabel: string
     tag?: string
     description: string
     video?: string
@@ -114,30 +134,33 @@ export default function App() {
     {
       id: 'bis-engine',
       title: 'BIS Standards Recommendation Engine',
-      category: 'AI / RAG Search',
+      category: 'ai',
+      categoryLabel: 'AI / Hybrid RAG Search',
       tag: 'Hackathon Winner',
-      description: 'Indian Micro and Small Enterprises (MSEs) spend weeks trying to find which Bureau of Indian Standards (BIS) regulations apply to their products. This AI-powered RAG pipeline ingests official BIS SP 21 cement, steel, and concrete catalogs to return top-5 ranked IS codes with explanation rationales in under 0.01 seconds.',
+      description: 'Indian Micro and Small Enterprises (MSEs) spend weeks searching through complex Bureau of Indian Standards (BIS) regulations. This AI-powered RAG pipeline ingests official BIS SP 21 cement, steel, and concrete catalogs to return top-5 ranked IS codes with explanation rationales in under 0.01 seconds.',
       video: '/videos/bis-standards-walkthrough.mp4',
-      techStack: ['Python', 'RAG Pipeline', 'FAISS', 'BM25 Retriever', 'FastAPI', 'JSON Schema', 'Robustness Testing'],
+      techStack: ['Python', 'FastAPI', 'FAISS', 'BM25 Retriever', 'Hybrid RAG', 'JSON Schema', 'Docker'],
       stats: [
         { label: 'Hit Rate @3', value: '100%' },
         { label: 'MRR @5', value: '1.000' },
         { label: 'Avg Latency', value: '0.01s' },
         { label: 'Tests Passed', value: '59/59' }
       ],
-      github: 'https://github.com/harshit-siraswal',
-      website: 'https://github.com/harshit-siraswal',
+      github: 'https://github.com/harshit-siraswal/BIS-Standards-Recommendation-Engine',
+      website: 'https://bis-standards-recommendation-engine-livid.vercel.app/',
       linkedin: 'https://www.linkedin.com/feed/update/urn:li:activity:7457838839613657088/',
       features: [
-        'RAG Engine — PDF Ingestion, Hierarchical Chunking, and FAISS Vector Search.',
-        'Hybrid Retrieval — Combined Dense Embeddings (FAISS) and Sparse Keyword Match (BM25) for top-5 regulations.',
-        'Latency Optimization — Sub-0.01s catalog lookup and response extraction.'
+        'Deterministic RAG Engine — Catalog extraction, hierarchical chunking, and FAISS vector indexing.',
+        'Hybrid Retrieval — Combined Dense Embeddings (FAISS) and Sparse Lexical Retrieval (BM25) for high-accuracy regulation matching.',
+        'Sub-0.01s Latency — Optimized inference and metadata filtering running locally or serverless.',
+        'Automated Test Suite — Passed all 59/59 evaluation and domain robustness tests.'
       ]
     },
     {
       id: 'studyshare',
-      title: 'StudyShare Platform',
-      category: 'Product Suite (Live)',
+      title: 'StudyShare Platform & Ingestion Suite',
+      category: 'fullstack',
+      categoryLabel: 'Product Suite (Live)',
       tag: 'Campus Administration System',
       description: 'A production-grade college administration and hostel management suite active on campus. Comprises a Next.js web portal, a Flutter student app, and a NestJS backend with n8n automated pipelines. Features receipt parsing via Tesseract OCR, dynamic QR gate passes, and a real-time municipal-level communication layer.',
       video: '/videos/studyshare-walkthrough.mp4',
@@ -148,8 +171,8 @@ export default function App() {
         { label: 'Ingestion Latency', value: '1.2s' },
         { label: 'Uptime (Railway)', value: '99.9%' }
       ],
-      github: 'https://github.com/harshit-siraswal',
-      website: 'https://studyshare.in',
+      github: 'https://github.com/harshit-siraswal/studyshare-web',
+      website: 'https://www.studyshare.in/',
       features: [
         'Unified Campus Ecosystem — Bridges student apps, security desks, and administrators in a single relational database on Neon Serverless.',
         'WhatsApp Ingestion Bot — Automates receipt verification using an n8n webhook pipeline. Extracts transaction text with Tesseract OCR, matches records, and logs approvals automatically.',
@@ -158,9 +181,108 @@ export default function App() {
       ]
     },
     {
+      id: 'memori',
+      title: 'Memori Labs (Agent Memory Infrastructure)',
+      category: 'ai',
+      categoryLabel: 'AI Systems & State',
+      tag: 'Agent Infrastructure',
+      description: 'Memori is agent-native memory infrastructure. A SQL-native, LLM-agnostic layer that turns agent execution traces and tool interactions into structured, persistent state for production multi-agent systems.',
+      techStack: ['TypeScript', 'SQL', 'PostgreSQL', 'LLM Memory', 'Vector Search', 'Node.js', 'Docker'],
+      stats: [
+        { label: 'Architecture', value: 'SQL-Native' },
+        { label: 'LLM Support', value: 'Agnostic' },
+        { label: 'State Sync', value: 'Real-Time' },
+        { label: 'Search', value: 'Hybrid Vector' }
+      ],
+      github: 'https://github.com/harshit-siraswal/Memori',
+      website: 'https://memorilabs.ai',
+      features: [
+        'SQL-Native Persistent State — Captures tool executions, user preferences, and intermediate outputs in relational queryable schemas.',
+        'LLM & Datastore Agnostic — Works seamlessly with OpenAI, Anthropic, Gemini, DeepSeek, and local models.',
+        'Graph Memory Extraction — Extracts entity relationships over time to reduce hallucination across long context runs.'
+      ]
+    },
+    {
+      id: 'returnshield-ai',
+      title: 'ReturnShield AI',
+      category: 'ai',
+      categoryLabel: 'AI E-Commerce Security',
+      tag: 'Innogeeks Hackathon Project',
+      description: 'Built during the Innogeeks Hackathon (KIET College Club). ReturnShield AI is an intelligent predictive return risk and fraud prevention platform for e-commerce brands. Powered by a trained scikit-learn machine learning pipeline that evaluates customer return velocity, purchase value, and discount patterns to deliver real-time risk scores and financial loss exposure estimates.',
+      techStack: ['React 19', 'TypeScript', 'Python', 'scikit-learn', 'Joblib', 'Vite', 'Geist UI', 'Vercel Edge'],
+      stats: [
+        { label: 'Model Accuracy', value: '95.0%' },
+        { label: 'Inference Speed', value: '45ms' },
+        { label: 'False Positives', value: '< 2.1%' },
+        { label: 'Hackathon', value: 'Innogeeks' }
+      ],
+      github: 'https://github.com/harshit-siraswal/ReturnsheildAI',
+      website: 'https://returnsheild-ai.vercel.app',
+      features: [
+        'Trained ML Classification Pipeline — Preprocessed multi-feature model evaluating customer return history, seller ratings, price tiers, and product reviews.',
+        'Revenue Impact Engine — Live calculation of order value at risk and estimated net loss prevention.',
+        'Action Stack & One-Click Interventions — Automated rule enforcement for high-risk orders with flagged return prevention workflows.',
+        'Geist Design System Interface — Clean, high-performance React 19 dashboard with interactive risk trend charts and Vercel Edge Copilot integration.'
+      ]
+    },
+    {
+      id: 'mini-siem',
+      title: 'SOC Sentinel (Mini-SIEM)',
+      category: 'security',
+      categoryLabel: 'Cybersecurity Telemetry',
+      tag: 'Security Analytics',
+      description: 'A lightweight Security Information and Event Management (SIEM) platform for real-time telemetry ingestion, threat detection rules, and anomaly visualization. Designed for SOC operations and rapid incident triage.',
+      techStack: ['TypeScript', 'React', 'Telemetry Logs', 'Rule Engine', 'Tailwind CSS', 'Vercel'],
+      stats: [
+        { label: 'Event Streaming', value: 'Live' },
+        { label: 'Rule Matching', value: 'Sub-ms' },
+        { label: 'Visualization', value: 'Interactive' },
+        { label: 'Architecture', value: 'Client-Edge' }
+      ],
+      github: 'https://github.com/harshit-siraswal/mini-siem',
+      website: 'https://mini-siem-nine.vercel.app',
+      features: [
+        'Real-Time Log Ingestion — Live stream parser for authentication events, network probes, and firewall logs.',
+        'Custom Rule Engine — Configurable alert criteria for brute-force attacks, port scans, and suspicious IPs.',
+        'Incident Timeline — Interactive SOC dashboard with severity filtering and triage workflows.'
+      ]
+    },
+    {
+      id: 'careagent',
+      title: 'CareAgent Healthcare Platform',
+      category: 'ai',
+      categoryLabel: 'Healthcare AI Agent',
+      tag: 'Multi-Channel Health Suite',
+      description: 'Autonomous health and medication compliance agent supporting WhatsApp, Telegram, and mobile apps. Features automated emergency escalations, caretaker alerts, prescription intelligence, and HIPAA-ready PostgreSQL contracts.',
+      techStack: ['Python', 'FastAPI', 'PostgreSQL', 'Flutter', 'Dart', 'Redis', 'LLM Runtimes'],
+      github: 'https://github.com/harshit-siraswal/careagent-backend',
+      features: [
+        'Backend Data Platform — Production SQL schema for consent ledgers, observations, risk escalations, and outbox events.',
+        'Multi-Channel Runtime — Patient communication via conversational messaging and voice reminders.',
+        'Caretaker & Doctor Dashboard — Patient adherence tracking and automated incident alerts.'
+      ]
+    },
+    {
+      id: 'core-inventory',
+      title: 'Core Inventory Platform',
+      category: 'fullstack',
+      categoryLabel: 'Enterprise ERP',
+      tag: 'Stock & Logistics Manager',
+      description: 'Modern, high-performance inventory and supply tracking suite built with React, TypeScript, and Vite. Designed for rapid warehouse operations, barcode management, and low-latency stock audits.',
+      techStack: ['React', 'TypeScript', 'Vite', 'Tailwind CSS', 'shadcn/ui'],
+      github: 'https://github.com/harshit-siraswal/Core_Inventory',
+      website: 'https://core-inventory-sigma.vercel.app',
+      features: [
+        'Real-Time Stock Auditing — Instant stock level adjustments with warehouse location tracking.',
+        'Responsive Data Tables — Virtualized high-density views with instant filtering and search.',
+        'Glassmorphic Dashboard — Clean dark UI designed for warehouse touchscreen terminals.'
+      ]
+    },
+    {
       id: 'code-analyser',
       title: 'Code Analyser',
-      category: 'CLI & Compiler Sandbox',
+      category: 'fullstack',
+      categoryLabel: 'CLI & Compiler Sandbox',
       tag: 'Analysis Tool',
       description: 'A coding practice platform that evaluates HOW users solve problems, rather than just simple outcomes. Uses Monaco Editor, Judge0 API sandbox, and AST parsing to detect code quality, error classification, and big-O time complexity.',
       techStack: ['React', 'FastAPI', 'Judge0', 'AST Parser', 'Monaco Editor'],
@@ -174,12 +296,13 @@ export default function App() {
     },
     {
       id: 'buildsmart',
-      title: 'BuildSmart',
-      category: 'AI Integration Platform',
+      title: 'BuildSmart AI',
+      category: 'ai',
+      categoryLabel: 'AI Integration Platform',
       tag: 'AI Assistant',
       description: 'AI-powered build management and optimization tool designed and shipped end-to-end in under two weeks. Integrates custom Large Language Models to deliver automated project recommendations and architectural insights.',
       techStack: ['TypeScript', 'React', 'Node.js', 'LLM API', 'Vercel'],
-      github: 'https://github.com/harshit-siraswal',
+      github: 'https://github.com/harshit-siraswal/buildsmart',
       website: 'https://buildsmart-kohl.vercel.app',
       features: [
         'Developed and deployed inside a strict 2-week window',
@@ -190,9 +313,10 @@ export default function App() {
     {
       id: 'manhole-mesh',
       title: 'Manhole IoT Mesh Detector',
-      category: 'Hardware & IoT Mesh',
+      category: 'hardware',
+      categoryLabel: 'Hardware & IoT Mesh',
       tag: 'ESP32 Device',
-      description: 'An IoT device using ESP32, load cell amplifiers, and ultrasonic sensors to detect missing covers in real time. Deployed ESP-NOW mesh protocol to relay cover status to municipal dashboards without relying on GSM or WiFi. Wokwi simulations are available for testing mesh relaying.',
+      description: 'An IoT device using ESP32, load cell amplifiers, and ultrasonic sensors to detect missing covers in real time. Deployed ESP-NOW mesh protocol to relay cover status to municipal dashboards without relying on GSM or WiFi.',
       image: '/images/hardware/tweet_image_1.jpg',
       images: ['/images/hardware/tweet_image_1.jpg', '/images/hardware/manhole_detection_flowchart.png'],
       techStack: ['ESP32', 'ESP-NOW Mesh', 'MQTT', 'Node.js', 'Load Cells', 'Ultrasonic Sensors', 'Wokwi Simulator'],
@@ -208,7 +332,8 @@ export default function App() {
     {
       id: 'stair-lighting',
       title: 'Smart Staircase Lighting System',
-      category: 'Hardware & IoT',
+      category: 'hardware',
+      categoryLabel: 'Hardware & Embedded',
       tag: 'LED Transition Controller',
       description: 'Motion-activated stair lighting system with smart transitions, ambient light adjustment, and power-saving sleep modes. Utilizes microcontrollers and addressable LED strips to create smooth, visual step tracking.',
       image: '/images/hardware/tweet_image_4.jpg',
@@ -224,7 +349,8 @@ export default function App() {
     {
       id: 'weather-tech',
       title: 'Weather Monitoring Sensor',
-      category: 'Hardware & Telemetry',
+      category: 'hardware',
+      categoryLabel: 'Hardware & Telemetry',
       tag: 'Sensor Station',
       description: 'ESP32-based weather station capturing temperature, humidity, and atmospheric pressure. Deploys a Node-RED dashboard for telemetry analysis, plotting live environmental data.',
       video: '/videos/weather-monitoring.mp4',
@@ -238,13 +364,93 @@ export default function App() {
     }
   ]
 
-  // Find active project based on hash state
+  // Technical Blog Articles Data
+  interface BlogPost {
+    id: string
+    title: string
+    category: string
+    date: string
+    readTime: string
+    excerpt: string
+    content: string[]
+    tags: string[]
+  }
+
+  const blogPosts: BlogPost[] = [
+    {
+      id: 'bis-hybrid-rag',
+      title: 'Architecting Sub-10ms Hybrid RAG: How We Built the BIS Standards Engine with FAISS & BM25',
+      category: 'AI & Information Retrieval',
+      date: 'August 2026',
+      readTime: '5 min read',
+      excerpt: 'Indian Micro and Small Enterprises lose weeks identifying mandatory IS certifications. Here is how we engineered a deterministic hybrid RAG pipeline achieving a 100% Hit Rate @3 with sub-0.01s inference.',
+      tags: ['FAISS', 'BM25', 'Python', 'FastAPI', 'RAG Architecture'],
+      content: [
+        'When dealing with regulatory catalogs like the Bureau of Indian Standards (BIS SP 21 for cement, concrete, and structural steel), vanilla semantic vector search frequently hallucinates or fails on domain codes (e.g. distinguishing IS 1489 Part 1 Portland Pozzolana Cement from IS 269 Ordinary Portland Cement).',
+        'To solve this, we architected a dual-retrieval pipeline combining Dense Vector Embeddings via FAISS with Sparse Lexical Matching via BM25.',
+        '1. Hierarchical Parsing & Term Expansion: We extracted structured clauses, product scopes, and test criteria from the official BIS PDF catalog, enriching chunks with domain synonym aliases (e.g. "OPC 43", "PPC", "Rapid Hardening").',
+        '2. Hybrid Score Fusion: Incoming queries are simultaneously vectorized for semantic cosine similarity and tokenized for BM25 term frequency. A calibrated reciprocal rank fusion layer balances both score distributions.',
+        '3. Sub-0.01s Execution: By pre-computing index caches in memory and enforcing strict JSON schemas on FastAPI endpoints, average lookup latency dropped to 0.01 seconds while passing 59 out of 59 validation benchmarks with an MRR @5 of 1.000.'
+      ]
+    },
+    {
+      id: 'memori-agent-state',
+      title: 'Agent-Native Memory: Building Persistent SQL State Infrastructure for Autonomous AI Agents',
+      category: 'AI Systems & Architecture',
+      date: 'July 2026',
+      readTime: '6 min read',
+      excerpt: 'Why raw context windows and disjointed vector databases fail long-running agents, and how Memori Labs structures tool executions and sessions into relational, persistent SQL state.',
+      tags: ['Autonomous Agents', 'SQL', 'State Management', 'Memori Labs'],
+      content: [
+        'Most autonomous agent frameworks treat memory as either an ephemeral sliding context window or an unindexed vector store of raw text chunks. In real-world enterprise applications, both approaches fail: sliding windows lose critical early decisions, while vector similarity retrieves irrelevant conversational fluff without understanding temporal order.',
+        'With Memori Labs, we approached agent memory through the lens of relational database engineering:',
+        '1. Execution Graphs as Structured Records: Every tool invocation, environment response, and reasoning chain is captured as an immutable event ledger with foreign keys to agent sessions and parent tasks.',
+        '2. Hybrid Semantic & Relational Querying: Agents can perform SQL joins over past actions ("Show me all failed API requests in step 3") while simultaneously running semantic vector filters over past conversation summaries.',
+        '3. Framework & LLM Agnostic: By decoupling state persistence from the LLM provider, agents can transition between models (e.g., Gemini 2.0 Flash for planning, Claude 3.7 for refactoring) without losing state continuity.'
+      ]
+    },
+    {
+      id: 'esp-now-mesh',
+      title: 'Zero-GSM Urban Resilience: Engineering ESP-NOW Mesh Protocols for Smart Cities',
+      category: 'Embedded Systems & IoT',
+      date: 'June 2026',
+      readTime: '5 min read',
+      excerpt: 'How we built a decentralized municipal manhole cover monitoring system using ESP32 microcontrollers and peer-to-peer ESP-NOW mesh relaying to eliminate expensive GSM SIM contracts.',
+      tags: ['ESP32', 'ESP-NOW', 'Mesh Networks', 'C++', 'IoT'],
+      content: [
+        'Urban open-manhole accidents cause hundreds of fatalities annually in emerging cities. Traditional smart city solutions rely on individual GSM/cellular SIM cards inside each cover — an approach that quickly fails due to massive recurring data fees, poor subterranean signal penetration, and high battery consumption.',
+        'Our design leverages ESP-NOW — a connectionless Wi-Fi protocol developed by Espressif that enables low-power packet transfers without standard Wi-Fi handshakes or routers:',
+        '1. Sensor Fusion: We paired HX711 load cell amplifiers with ultrasonic distance sensors. When a manhole cover is displaced, an instantaneous hardware interrupt wakes the ESP32 from deep sleep (< 15 µA).',
+        '2. Multi-Hop Mesh Propagation: Instead of calling a cellular tower, the node broadcasts a 250-byte encrypted packet to neighboring street-light nodes. The nodes daisy-chain the message until reaching a single internet-connected edge gateway.',
+        '3. Municipal Telemetry: The gateway publishes the alert to a central Node.js / MQTT dashboard with exact GPS coordinates and cover displacement timestamps in under 200 milliseconds.'
+      ]
+    },
+    {
+      id: 'studyshare-ocr-pass',
+      title: 'OCR at Scale: Automated Receipt Ingestion & QR Gate Pass Security in StudyShare',
+      category: 'Full-Stack Engineering',
+      date: 'May 2026',
+      readTime: '5 min read',
+      excerpt: 'Inside the engineering of StudyShare: handling 500+ active campus users with an n8n webhook pipeline, Tesseract OCR receipt parsing, and dynamic encrypted QR security passes.',
+      tags: ['Next.js', 'NestJS', 'Tesseract OCR', 'PostgreSQL', 'Flutter'],
+      content: [
+        'College administrative workflows are plagued by manual verification: students submit paper bank receipts or screenshots on messaging apps, and staff manually reconcile them with fee accounts.',
+        'StudyShare transformed this into an automated digital suite currently live on campus:',
+        '1. Asynchronous Webhook Pipelines: When a student sends a fee slip via the WhatsApp bot, an n8n pipeline ingests the image and feeds it to a specialized Tesseract OCR engine with image preprocessing (binarization, contrast normalization, skew correction).',
+        '2. Transaction Matching: Extracted UTR numbers and transaction amounts are matched against bank ledgers in our Neon Serverless PostgreSQL database with 98.4% accuracy.',
+        '3. Dynamic Encrypted QR Gate Passes: For student leave and hostel permissions, the Flutter client renders time-bound QR tokens signed with HMAC-SHA256. Campus security guards scan and authenticate departures in real time even under intermittent connectivity.'
+      ]
+    }
+  ]
+
+  // Find active project or blog based on state
   const activeProject = projectsData.find(p => `#${p.id}` === selectedProjectHash)
+  const activeBlog = blogPosts.find(b => b.id === selectedBlogId)
 
   // Track active scroll section
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['home', 'studio', 'about', 'journal', 'reach-us']
+      const sections = ['home', 'studio', 'about', 'journal', 'blog', 'reach-us']
       const scrollPosition = window.scrollY + 200
 
       for (const section of sections) {
@@ -291,8 +497,6 @@ export default function App() {
     setSelectedImage(lightboxImages[nextIndex])
   }
 
-
-
   const handleContactSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (formName && formEmail && formMessage) {
@@ -307,42 +511,48 @@ export default function App() {
   }
 
   const skillsData = [
-    { name: 'TypeScript', level: 90, category: 'languages' },
+    { name: 'TypeScript', level: 92, category: 'languages' },
     { name: 'JavaScript', level: 95, category: 'languages' },
-    { name: 'Python', level: 85, category: 'languages' },
-    { name: 'Dart', level: 80, category: 'languages' },
-    { name: 'C++', level: 75, category: 'languages' },
-    { name: 'HTML5/CSS3', level: 95, category: 'languages' },
+    { name: 'Python', level: 90, category: 'languages' },
+    { name: 'Dart', level: 82, category: 'languages' },
+    { name: 'C / C++', level: 80, category: 'languages' },
+    { name: 'SQL', level: 90, category: 'languages' },
+    { name: 'HTML5 / CSS3', level: 95, category: 'languages' },
     
-    { name: 'React', level: 90, category: 'frontend' },
-    { name: 'Next.js', level: 88, category: 'frontend' },
+    { name: 'React', level: 92, category: 'frontend' },
+    { name: 'Next.js', level: 90, category: 'frontend' },
     { name: 'Tailwind CSS', level: 95, category: 'frontend' },
     { name: 'shadcn/ui', level: 92, category: 'frontend' },
-    { name: 'Flutter (Mobile)', level: 82, category: 'frontend' },
+    { name: 'Flutter (Mobile)', level: 85, category: 'frontend' },
     { name: 'Vite', level: 90, category: 'frontend' },
 
-    { name: 'Node.js', level: 88, category: 'backend' },
-    { name: 'Express', level: 90, category: 'backend' },
-    { name: 'NestJS', level: 80, category: 'backend' },
-    { name: 'FastAPI (Python)', level: 82, category: 'backend' },
-    { name: 'Prisma ORM', level: 85, category: 'backend' },
-    { name: 'REST APIs', level: 92, category: 'backend' },
+    { name: 'Node.js', level: 90, category: 'backend' },
+    { name: 'NestJS', level: 85, category: 'backend' },
+    { name: 'FastAPI (Python)', level: 88, category: 'backend' },
+    { name: 'Express.js', level: 90, category: 'backend' },
+    { name: 'Prisma ORM', level: 88, category: 'backend' },
+    { name: 'REST & WebSockets', level: 92, category: 'backend' },
 
-    { name: 'PostgreSQL', level: 85, category: 'databases' },
-    { name: 'Neon Serverless', level: 85, category: 'databases' },
-    { name: 'Redis', level: 75, category: 'databases' },
+    { name: 'PostgreSQL', level: 88, category: 'databases' },
+    { name: 'Neon Serverless', level: 88, category: 'databases' },
+    { name: 'Redis', level: 80, category: 'databases' },
+    { name: 'FAISS Vector Indexing', level: 88, category: 'databases' },
 
-    { name: 'Docker', level: 80, category: 'devops' },
-    { name: 'Vercel / Railway', level: 88, category: 'devops' },
-    { name: 'Git & GitHub', level: 90, category: 'devops' },
-    { name: 'n8n Automation', level: 85, category: 'devops' },
-    { name: 'AI/LLM Integration', level: 90, category: 'devops' },
-    { name: 'ESP32 & IoT Mesh', level: 85, category: 'devops' }
+    { name: 'Cloudflare Workers & Edge', level: 86, category: 'devops' },
+    { name: 'Docker', level: 82, category: 'devops' },
+    { name: 'Vercel / Railway', level: 90, category: 'devops' },
+    { name: 'n8n Automation', level: 88, category: 'devops' },
+    { name: 'RAG Search Pipelines', level: 92, category: 'devops' },
+    { name: 'ESP32 & ESP-NOW Mesh', level: 90, category: 'devops' }
   ]
 
   const filteredSkills = selectedSkillCategory === 'all' 
     ? skillsData 
     : skillsData.filter(s => s.category === selectedSkillCategory)
+
+  const filteredProjects = selectedProjectCategory === 'all'
+    ? projectsData
+    : projectsData.filter(p => p.category === selectedProjectCategory)
 
   // Card hover video controllers
   const hoverPlayVideo = (e: React.MouseEvent<HTMLVideoElement>) => {
@@ -376,14 +586,15 @@ export default function App() {
 
         {/* Glassmorphic Navigation Bar */}
         <header className="relative z-10 w-full">
-          <div className="max-w-7xl mx-auto px-8 py-6 flex items-center justify-between">
+          <div className="max-w-7xl mx-auto px-6 sm:px-8 py-6 flex items-center justify-between">
             {/* Logo */}
             <div 
               onClick={() => scrollTo('home')}
-              className="text-3xl tracking-tight text-foreground cursor-pointer select-none font-normal"
+              className="text-3xl tracking-tight text-foreground cursor-pointer select-none font-normal flex items-center gap-2"
               style={{ fontFamily: "'Instrument Serif', serif" }}
             >
-              Harshit Pal<span className="text-muted-foreground">.</span>
+              <span>Harshit Pal</span>
+              <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             </div>
 
             {/* Nav Links - Desktop */}
@@ -393,6 +604,7 @@ export default function App() {
                 { name: 'Studio', id: 'studio' },
                 { name: 'About', id: 'about' },
                 { name: 'Journal', id: 'journal' },
+                { name: 'Articles', id: 'blog' },
                 { name: 'Reach Us', id: 'reach-us' }
               ].map((link) => (
                 <button
@@ -410,7 +622,7 @@ export default function App() {
             </nav>
 
             {/* Nav CTA - Desktop */}
-            <div className="hidden md:block">
+            <div className="hidden md:flex items-center gap-4">
               <button 
                 onClick={() => scrollTo('studio')}
                 className="liquid-glass rounded-full px-6 py-2.5 text-sm text-foreground hover:scale-[1.03] transition-all duration-300 cursor-pointer"
@@ -437,6 +649,7 @@ export default function App() {
                 { name: 'Studio', id: 'studio' },
                 { name: 'About', id: 'about' },
                 { name: 'Journal', id: 'journal' },
+                { name: 'Articles', id: 'blog' },
                 { name: 'Reach Us', id: 'reach-us' }
               ].map((link) => (
                 <button
@@ -460,7 +673,17 @@ export default function App() {
         </header>
 
         {/* Hero Central Content */}
-        <div className="relative z-10 flex flex-col items-center justify-center text-center px-6 pt-32 pb-40 py-[90px] flex-grow max-w-7xl mx-auto">
+        <div className="relative z-10 flex flex-col items-center justify-center text-center px-6 pt-28 pb-32 flex-grow max-w-7xl mx-auto">
+          {/* Badge */}
+          <div className="animate-fade-rise mb-6 flex flex-wrap items-center justify-center gap-2">
+            <span className="px-4 py-1.5 rounded-full text-xs font-mono bg-white/5 border border-white/10 text-emerald-400 backdrop-blur-md flex items-center gap-2">
+              <Sparkles size={12} /> B.Tech CSE (AIML) @ KIET &bull; Full-Stack &amp; IoT
+            </span>
+            <span className="px-3.5 py-1.5 rounded-full text-xs font-mono bg-white/5 border border-white/10 text-cyan-400 backdrop-blur-md">
+              2x NDA Qualified &bull; IOQM 2022 Merit
+            </span>
+          </div>
+
           {/* Main Title Heading */}
           <h1 
             className="animate-fade-rise text-5xl sm:text-7xl md:text-8xl leading-[0.95] tracking-[-2.46px] max-w-7xl font-normal text-foreground select-none"
@@ -474,17 +697,26 @@ export default function App() {
           <p 
             className="animate-fade-rise-delay text-muted-foreground text-base sm:text-lg max-w-2xl mt-8 leading-relaxed font-normal"
           >
-            I am a Full-Stack Developer and IoT Engineer. I build responsive web systems, 
-            intelligent AI search pipelines, and self-healing hardware mesh networks.
+            I am Harshit Pal — Full-Stack Developer, AI/RAG Systems Engineer, and IoT Specialist. 
+            I build low-latency web platforms, agent-native memory layers, and self-healing hardware mesh networks.
           </p>
 
-          {/* Centered Hero CTA */}
-          <button 
-            onClick={() => scrollTo('studio')}
-            className="animate-fade-rise-delay-2 liquid-glass rounded-full px-14 py-5 text-base text-foreground mt-12 hover:scale-[1.03] transition-all duration-300 cursor-pointer tracking-wider font-medium select-none"
-          >
-            Explore Projects
-          </button>
+          {/* Centered Hero CTAs */}
+          <div className="animate-fade-rise-delay-2 flex flex-wrap items-center justify-center gap-4 mt-10">
+            <button 
+              onClick={() => scrollTo('studio')}
+              className="liquid-glass rounded-full px-10 py-4 text-sm text-foreground hover:scale-[1.03] transition-all duration-300 cursor-pointer tracking-wider font-semibold select-none shadow-xl"
+            >
+              Explore Projects
+            </button>
+            <a 
+              href="/Harshit_Pal_Resume.pdf" 
+              download="Harshit_Pal_Resume.pdf"
+              className="rounded-full px-8 py-4 text-sm bg-white text-zinc-950 hover:bg-zinc-200 transition-all duration-300 cursor-pointer font-semibold flex items-center gap-2 shadow-xl"
+            >
+              <Download size={14} /> Download Resume
+            </a>
+          </div>
         </div>
 
         {/* Scroll Indicator */}
@@ -506,16 +738,34 @@ export default function App() {
         {/* 2. STUDIO SECTION (PROJECT SHOWCASE) */}
         <section id="studio" className="max-w-7xl mx-auto px-6 sm:px-8 py-24 sm:py-32">
           
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 border-b border-border/20 pb-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 border-b border-border/20 pb-8">
             <div>
               <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium mb-3">STUDIO CREATIONS</p>
               <h2 className="text-4xl sm:text-5xl font-normal text-foreground tracking-tight" style={{ fontFamily: "'Instrument Serif', serif" }}>
                 Crafting with Code &amp; Copper.
               </h2>
             </div>
-            <p className="text-muted-foreground max-w-md mt-4 md:mt-0 text-sm sm:text-base leading-relaxed">
-              Explore a collection of production-grade web applications, RAG search pipelines, and embedded IoT mesh networks.
-            </p>
+            <div className="flex flex-wrap gap-2 mt-6 md:mt-0">
+              {[
+                { label: 'All Projects', value: 'all' },
+                { label: 'AI & ML', value: 'ai' },
+                { label: 'Full-Stack', value: 'fullstack' },
+                { label: 'Hardware / IoT', value: 'hardware' },
+                { label: 'Security', value: 'security' }
+              ].map((tab) => (
+                <button
+                  key={tab.value}
+                  onClick={() => setSelectedProjectCategory(tab.value)}
+                  className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 cursor-pointer ${
+                    selectedProjectCategory === tab.value
+                      ? 'bg-foreground text-background scale-[1.03]'
+                      : 'bg-white/5 hover:bg-white/10 text-muted-foreground border border-white/5'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Flagship Projects Layout (BIS Standards Engine & StudyShare Platform) */}
@@ -533,7 +783,7 @@ export default function App() {
                 <div className="lg:col-span-7 flex flex-col justify-between">
                   <div>
                     <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-                      <span className="px-4 py-1 rounded-full text-xs font-semibold bg-white/5 border border-white/10 text-foreground">
+                      <span className="px-4 py-1 rounded-full text-xs font-semibold bg-white/5 border border-white/10 text-emerald-400">
                         Featured Flagship
                       </span>
                       <span className="text-xs text-muted-foreground font-mono">
@@ -566,7 +816,7 @@ export default function App() {
 
                   <div className="flex flex-wrap gap-2 mb-6 lg:mb-0">
                     {['Python', 'RAG Pipeline', 'FAISS', 'BM25 Retriever', 'FastAPI', 'JSON Schema', 'Robustness Testing'].map((t) => (
-                      <span key={t} className="px-3 py-1 rounded-full text-xs bg-white/5 text-muted-foreground border border-white/5">
+                      <span key={t} className="px-3 py-1 rounded-full text-xs bg-white/5 text-muted-foreground border border-white/5 font-mono">
                         {t}
                       </span>
                     ))}
@@ -575,7 +825,6 @@ export default function App() {
 
                 {/* Right Pane (Video & Footer) */}
                 <div className="lg:col-span-5 flex flex-col justify-between">
-                  {/* Looping video preview container */}
                   <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black/40 border border-white/5 mb-6 flex-grow">
                     <video 
                       loop 
@@ -598,7 +847,7 @@ export default function App() {
                     <span className="text-xs text-foreground font-medium flex items-center gap-1.5 group-hover:underline">
                       View Detailed Case Study <ExternalLink size={12} />
                     </span>
-                    <span className="text-2xs text-muted-foreground font-mono">Team Anushka Sharma & Harsh Attri</span>
+                    <span className="text-2xs text-muted-foreground font-mono">Team Anushka Sharma &amp; Harsh Attri</span>
                   </div>
                 </div>
               </div>
@@ -616,7 +865,7 @@ export default function App() {
                 <div className="lg:col-span-7 flex flex-col justify-between">
                   <div>
                     <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-                      <span className="px-4 py-1 rounded-full text-xs font-semibold bg-white/5 border border-white/10 text-foreground">
+                      <span className="px-4 py-1 rounded-full text-xs font-semibold bg-white/5 border border-white/10 text-cyan-400">
                         Flagship Product
                       </span>
                       <span className="text-xs text-muted-foreground font-mono">
@@ -625,7 +874,7 @@ export default function App() {
                     </div>
                     
                     <h3 className="text-3xl sm:text-4xl font-normal text-foreground mb-4 group-hover:text-zinc-300 transition-colors" style={{ fontFamily: "'Instrument Serif', serif" }}>
-                      StudyShare Platform
+                      StudyShare Platform &amp; Ingestion Bot
                     </h3>
                     
                     <p className="text-muted-foreground text-sm sm:text-base leading-relaxed mb-6">
@@ -658,7 +907,6 @@ export default function App() {
 
                 {/* Right Pane (Video & Footer) */}
                 <div className="lg:col-span-5 flex flex-col justify-between">
-                  {/* Looping video preview container */}
                   <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black/40 border border-white/5 mb-6 flex-grow">
                     <video 
                       loop 
@@ -689,165 +937,67 @@ export default function App() {
 
           </div>
 
-          {/* Row of 3 projects (Code Analyser, BuildSmart, Manhole Mesh) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
-            
-            {/* Project: Code Analyser */}
-            <motion.div 
-              whileHover={{ scale: 1.02, translateY: -6 }}
-              className="liquid-glass rounded-3xl p-6 sm:p-8 flex flex-col justify-between border border-border/10 group cursor-pointer"
-              onClick={() => { window.location.hash = '#code-analyser' }}
-            >
-              <div>
-                <span className="text-xs text-muted-foreground font-mono block mb-4">CLI &amp; Compiler Sandbox</span>
-                <h4 className="text-2xl font-normal text-foreground mb-3 group-hover:text-zinc-300 transition-colors" style={{ fontFamily: "'Instrument Serif', serif" }}>
-                  Code Analyser
-                </h4>
-                <p className="text-muted-foreground text-sm leading-relaxed mb-6">
-                  A coding practice platform that evaluates HOW users solve problems, rather than just simple outcomes. Uses Monaco Editor, Judge0 API sandbox, and AST parsing to detect code quality, error classification, and big-O time complexity.
-                </p>
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {['React', 'FastAPI', 'Judge0', 'AST Parser', 'Monaco Editor'].map((t) => (
-                    <span key={t} className="px-2 py-0.5 rounded-full text-xs bg-white/5 text-muted-foreground border border-white/5 font-mono">
-                      {t}
-                    </span>
-                  ))}
+          {/* Grid of Projects (Memori, ReturnShield, Mini-SIEM, CareAgent, Core Inventory, Hardware) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+            {filteredProjects.filter(p => p.id !== 'bis-engine' && p.id !== 'studyshare').map((p) => (
+              <motion.div 
+                key={p.id}
+                whileHover={{ scale: 1.02, translateY: -6 }}
+                className="liquid-glass rounded-3xl p-6 sm:p-7 flex flex-col justify-between border border-border/10 group cursor-pointer"
+                onClick={() => { window.location.hash = `#${p.id}` }}
+              >
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <span className="text-2xs text-muted-foreground font-mono uppercase tracking-wider">{p.categoryLabel}</span>
+                    {p.tag && (
+                      <span className="text-2xs font-mono px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-emerald-400">
+                        {p.tag}
+                      </span>
+                    )}
+                  </div>
+                  <h4 className="text-2xl font-normal text-foreground mb-2.5 group-hover:text-zinc-300 transition-colors" style={{ fontFamily: "'Instrument Serif', serif" }}>
+                    {p.title}
+                  </h4>
+                  <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed mb-6 line-clamp-3">
+                    {p.description}
+                  </p>
+                  <div className="flex flex-wrap gap-1.5 mb-6">
+                    {p.techStack.slice(0, 4).map((t) => (
+                      <span key={t} className="px-2 py-0.5 rounded-full text-2xs bg-white/5 text-muted-foreground border border-white/5 font-mono">
+                        {t}
+                      </span>
+                    ))}
+                    {p.techStack.length > 4 && (
+                      <span className="px-1.5 py-0.5 rounded-full text-2xs bg-white/5 text-muted-foreground/60 font-mono">
+                        +{p.techStack.length - 4}
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
-              <span className="flex items-center gap-1.5 text-xs text-foreground font-semibold group-hover:underline mt-auto">
-                Explore Case Study &amp; Live Site <ExternalLink size={12} />
-              </span>
-            </motion.div>
-
-            {/* Project: BuildSmart */}
-            <motion.div 
-              whileHover={{ scale: 1.02, translateY: -6 }}
-              className="liquid-glass rounded-3xl p-6 sm:p-8 flex flex-col justify-between border border-border/10 group cursor-pointer"
-              onClick={() => { window.location.hash = '#buildsmart' }}
-            >
-              <div>
-                <span className="text-xs text-muted-foreground font-mono block mb-4">AI Integration Platform</span>
-                <h4 className="text-2xl font-normal text-foreground mb-3 group-hover:text-zinc-300 transition-colors" style={{ fontFamily: "'Instrument Serif', serif" }}>
-                  BuildSmart
-                </h4>
-                <p className="text-muted-foreground text-sm leading-relaxed mb-6">
-                  AI-powered build management and optimization tool designed and shipped end-to-end in under two weeks. Integrates custom Large Language Models to deliver automated project recommendations and architectural insights.
-                </p>
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {['TypeScript', 'React', 'Node.js', 'LLM API', 'Vercel'].map((t) => (
-                    <span key={t} className="px-2 py-0.5 rounded-full text-xs bg-white/5 text-muted-foreground border border-white/5 font-mono">
-                      {t}
-                    </span>
-                  ))}
+                <div className="flex items-center justify-between pt-3 border-t border-white/5">
+                  <span className="flex items-center gap-1.5 text-xs text-foreground font-semibold group-hover:underline">
+                    Explore Details <ExternalLink size={12} />
+                  </span>
+                  {p.website && <span className="text-2xs text-muted-foreground font-mono">Live Deployment</span>}
                 </div>
-              </div>
-              <span className="flex items-center gap-1.5 text-xs text-foreground font-semibold group-hover:underline mt-auto">
-                Explore Case Study &amp; Live Site <ExternalLink size={12} />
-              </span>
-            </motion.div>
-
-            {/* Project: Hardware - Manhole Presence Mesh */}
-            <motion.div 
-              whileHover={{ scale: 1.02, translateY: -6 }}
-              className="liquid-glass rounded-3xl p-6 sm:p-8 flex flex-col justify-between border border-border/10 group cursor-pointer"
-              onClick={() => { window.location.hash = '#manhole-mesh' }}
-            >
-              <div>
-                <span className="text-xs text-muted-foreground font-mono block mb-4">Hardware &amp; IoT Mesh</span>
-                <h4 className="text-2xl font-normal text-foreground mb-3 group-hover:text-zinc-300 transition-colors" style={{ fontFamily: "'Instrument Serif', serif" }}>
-                  Manhole IoT Mesh Detector
-                </h4>
-                <p className="text-muted-foreground text-sm leading-relaxed mb-6">
-                  An IoT device using ESP32, load cell amplifiers, and ultrasonic sensors to detect missing covers in real time. Deployed ESP-NOW mesh protocol to relay cover status to municipal dashboards without relying on GSM or WiFi.
-                </p>
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {['ESP32', 'ESP-NOW Mesh', 'MQTT', 'Node.js', 'Load Cells'].map((t) => (
-                    <span key={t} className="px-2 py-0.5 rounded-full text-xs bg-white/5 text-muted-foreground border border-white/5 font-mono">
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <span className="flex items-center gap-1.5 text-xs text-foreground font-semibold group-hover:underline mt-auto">
-                View Hardware Mesh Details <ExternalLink size={12} />
-              </span>
-            </motion.div>
-
-          </div>
-
-          {/* Row of 2 projects (Stair Lighting, Weather Monitoring Sensor) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
-            
-            {/* Project: Stair Lighting */}
-            <motion.div 
-              whileHover={{ scale: 1.01, translateY: -6 }}
-              className="liquid-glass rounded-3xl p-6 sm:p-8 flex flex-col justify-between border border-border/10 group cursor-pointer"
-              onClick={() => { window.location.hash = '#stair-lighting' }}
-            >
-              <div>
-                <span className="text-xs text-muted-foreground font-mono block mb-4">Hardware &amp; IoT</span>
-                <h4 className="text-2xl font-normal text-foreground mb-3 group-hover:text-zinc-300 transition-colors" style={{ fontFamily: "'Instrument Serif', serif" }}>
-                  Smart Staircase Lighting System
-                </h4>
-                <p className="text-muted-foreground text-sm leading-relaxed mb-6">
-                  Motion-activated stair lighting system with smart transitions, ambient light adjustment, and power-saving sleep modes. Utilizes microcontrollers and addressable LED strips to create smooth, visual step tracking.
-                </p>
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {['Arduino', 'ESP32', 'WS2812B LEDs', 'PIR Sensors', 'Custom PCB'].map((t) => (
-                    <span key={t} className="px-2 py-0.5 rounded-full text-xs bg-white/5 text-muted-foreground border border-white/5 font-mono">
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <span className="flex items-center gap-1.5 text-xs text-foreground font-semibold group-hover:underline mt-auto">
-                View Stair Lighting Details <ExternalLink size={12} />
-              </span>
-            </motion.div>
-
-            {/* Project: Weather Monitoring Sensor */}
-            <motion.div 
-              whileHover={{ scale: 1.01, translateY: -6 }}
-              className="liquid-glass rounded-3xl p-6 sm:p-8 flex flex-col justify-between border border-border/10 group cursor-pointer"
-              onClick={() => { window.location.hash = '#weather-tech' }}
-            >
-              <div>
-                <span className="text-xs text-muted-foreground font-mono block mb-4">Hardware &amp; Telemetry</span>
-                <h4 className="text-2xl font-normal text-foreground mb-3 group-hover:text-zinc-300 transition-colors" style={{ fontFamily: "'Instrument Serif', serif" }}>
-                  Weather Monitoring Sensor
-                </h4>
-                <p className="text-muted-foreground text-sm leading-relaxed mb-6">
-                  ESP32-based weather station capturing temperature, humidity, and atmospheric pressure. Deploys a Node-RED dashboard for telemetry analysis, plotting live environmental data.
-                </p>
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {['ESP32', 'DHT22 Sensor', 'BMP280', 'WiFi', 'MQTT', 'Node-RED', 'Grafana'].map((t) => (
-                    <span key={t} className="px-2 py-0.5 rounded-full text-xs bg-white/5 text-muted-foreground border border-white/5 font-mono">
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <span className="flex items-center gap-1.5 text-xs text-foreground font-semibold group-hover:underline mt-auto">
-                View Telemetry Case Study <ExternalLink size={12} />
-              </span>
-            </motion.div>
-
+              </motion.div>
+            ))}
           </div>
 
           {/* HARDWARE PROJECTS GALLERY SECTION */}
-          <div className="mt-20">
-            <div className="mb-8">
-              <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium mb-2 block">HARDWARE LAB</span>
+          <div className="mt-16">
+            <div className="mb-6">
+              <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium mb-2 block">HARDWARE LAB &amp; PROTOTYPES</span>
               <h3 className="text-2xl font-normal text-foreground" style={{ fontFamily: "'Instrument Serif', serif" }}>
                 Wiring, Breadboards &amp; Microcontrollers
               </h3>
-              <p className="text-muted-foreground text-sm mt-1 max-w-2xl">
-                Snapshots from various hardware builds including ESP32 mesh networks, Arduino setups, sensor wiring, and prototype casings. Click to enlarge.
+              <p className="text-muted-foreground text-xs sm:text-sm mt-1 max-w-2xl">
+                Snapshots from physical hardware builds including ESP32 mesh networks, Arduino systems, sensor wiring, and prototype casings. Click to enlarge.
               </p>
             </div>
 
             {/* Horizontal Scrolling Bento Gallery */}
-            <div className="flex gap-4 overflow-x-auto pb-6 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+            <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
               {[
                 '/images/hardware/manhole-mesh.jpg',
                 '/images/hardware/stair-lighting.jpg'
@@ -874,15 +1024,15 @@ export default function App() {
         <section id="about" className="bg-white/[0.01] border-y border-border/10 py-24 sm:py-32">
           <div className="max-w-7xl mx-auto px-6 sm:px-8">
             
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 sm:gap-16 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 sm:gap-16 items-start">
               
               {/* Profile Image & Quote Column */}
               <div className="lg:col-span-5 flex flex-col items-center">
                 <div className="relative w-64 sm:w-80 aspect-square rounded-3xl overflow-hidden p-2 liquid-glass border border-white/10 shadow-2xl">
                   <img 
-                    src="/harshit.jpg" 
-                    alt="Harshit Pal Profile" 
-                    className="w-full h-full object-cover rounded-2xl grayscale hover:grayscale-0 transition-all duration-700" 
+                    src="/ghibli_coder.jpg" 
+                    alt="Harshit Pal - Ghibli Coder Illustration" 
+                    className="w-full h-full object-cover rounded-2xl transition-all duration-700 hover:scale-[1.02]" 
                   />
                 </div>
                 <div className="mt-8 text-center">
@@ -900,23 +1050,43 @@ export default function App() {
                   Harshit Pal
                 </h2>
                 
-                <p className="text-muted-foreground text-sm sm:text-base leading-relaxed mb-6">
-                  I am a first-year B.Tech Computer Science &amp; Engineering student at <strong className="text-foreground">KIET Group of Institutions, Ghaziabad</strong>, with an intense drive for building functional tech. I don't just study concepts; I build them into live platforms.
+                <p className="text-muted-foreground text-sm sm:text-base leading-relaxed mb-4">
+                  I am a B.Tech Computer Science &amp; Engineering student (AI &amp; ML) at <strong className="text-foreground">KIET Group of Institutions, Ghaziabad</strong>. I bridge complex theoretical intelligence with robust software architecture and embedded hardware reality.
                 </p>
                 <p className="text-muted-foreground text-sm sm:text-base leading-relaxed mb-8">
-                  From writing complex NestJS backend pipelines to flashing code on ESP32 microcontrollers for self-sufficient mesh setups, I love bridging the gap between digital software layers and hardware environments.
+                  Whether developing deterministic sub-0.01s hybrid RAG search for Indian standards, architecting SQL-native agent memory infrastructure with Memori Labs, or flashing low-power ESP-NOW peer mesh networks on ESP32 microcontrollers, I build systems engineered for production reliability.
                 </p>
 
-                {/* Grid of Credentials */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {/* Grid of Credentials & National Qualifications */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   
+                  {/* NATIONAL CREDENTIAL: 2x NDA & 3x SSB */}
+                  <div className="p-5 rounded-2xl bg-white/5 border border-white/5 flex gap-4">
+                    <Shield className="text-cyan-400 shrink-0 mt-1" size={20} />
+                    <div>
+                      <h4 className="text-sm font-semibold text-foreground">2x NDA Qualified &bull; 3x SSB</h4>
+                      <p className="text-xs text-muted-foreground mt-1">National Defence Academy &amp; SSB Boards</p>
+                      <p className="text-2xs text-cyan-400 font-mono mt-1">Leadership &bull; Resilience &bull; Crisis Aptitude</p>
+                    </div>
+                  </div>
+
+                  {/* NATIONAL CREDENTIAL: IOQM 2022 */}
+                  <div className="p-5 rounded-2xl bg-white/5 border border-white/5 flex gap-4">
+                    <Award className="text-purple-400 shrink-0 mt-1" size={20} />
+                    <div>
+                      <h4 className="text-sm font-semibold text-foreground">IOQM 2022 Qualified</h4>
+                      <p className="text-xs text-muted-foreground mt-1">Indian Olympiad Qualifier in Mathematics</p>
+                      <p className="text-2xs text-purple-400 font-mono mt-1">Merit Certificate Holder</p>
+                    </div>
+                  </div>
+
                   {/* EDUCATION: B.Tech CSE */}
                   <div className="p-5 rounded-2xl bg-white/5 border border-white/5 flex gap-4">
                     <BookOpen className="text-muted-foreground shrink-0 mt-1" size={20} />
                     <div>
                       <h4 className="text-sm font-semibold text-foreground">B.Tech in CSE (AIML)</h4>
                       <p className="text-xs text-muted-foreground mt-1">KIET Ghaziabad (2025 - 2029)</p>
-                      <p className="text-xs text-emerald-400 font-mono mt-1">CGPA: 7.83 (Sem 1)</p>
+                      <p className="text-2xs text-emerald-400 font-mono mt-1">SGPA: 7.83 (Sem 1)</p>
                     </div>
                   </div>
 
@@ -932,7 +1102,7 @@ export default function App() {
                         <ExternalLink size={12} className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
                       <p className="text-xs text-muted-foreground mt-1">AWS Academy / Cloud Specialist</p>
-                      <p className="text-xs text-amber-400 font-semibold mt-1">Click to view Certificate</p>
+                      <p className="text-2xs text-amber-400 font-semibold mt-1">Click to view Certificate</p>
                     </div>
                   </button>
 
@@ -944,32 +1114,13 @@ export default function App() {
                     <Award className="text-emerald-400 shrink-0 mt-1 group-hover:scale-110 transition-transform" size={20} />
                     <div className="flex-1">
                       <div className="flex items-center gap-1.5">
-                        <h4 className="text-sm font-semibold text-foreground">Innotech &apos;25</h4>
+                        <h4 className="text-sm font-semibold text-foreground">Innotech &apos;25 Hackathon</h4>
                         <ExternalLink size={12} className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
                       <p className="text-xs text-muted-foreground mt-1">KIET Ghaziabad (Hackathon/Expo)</p>
-                      <p className="text-xs text-emerald-400 font-mono mt-1">First-Year Innovator</p>
-                      <p className="text-xs text-emerald-400 font-semibold mt-1">Click to view Certificate</p>
+                      <p className="text-2xs text-emerald-400 font-mono mt-1">Winner: First-Year Innovator</p>
                     </div>
                   </button>
-
-                  {/* ACHIEVEMENT: HackO'Clock 2.0 */}
-                  <a 
-                    href="https://www.linkedin.com/feed/update/urn:li:activity:7433518719781265408/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 transition-all flex gap-4 text-left group"
-                  >
-                    <Award className="text-muted-foreground shrink-0 mt-1" size={20} />
-                    <div>
-                      <div className="flex items-center gap-1.5">
-                        <h4 className="text-sm font-semibold text-foreground">HackO&apos;Clock 2.0</h4>
-                        <ExternalLink size={12} className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-1">IILM Greater Noida (Hackathon)</p>
-                      <p className="text-xs text-muted-foreground mt-1">Frontend Developer Contribution</p>
-                    </div>
-                  </a>
 
                   {/* JEE Score Card */}
                   <div className="p-5 rounded-2xl bg-white/5 border border-white/5 flex gap-4">
@@ -977,17 +1128,16 @@ export default function App() {
                     <div>
                       <h4 className="text-sm font-semibold text-foreground">JEE Main 2025</h4>
                       <p className="text-xs text-muted-foreground mt-1">Percentile: 89.12</p>
-                      <p className="text-xs text-muted-foreground/60 mt-1">National Level Competency</p>
+                      <p className="text-2xs text-muted-foreground/60 mt-1">National Level Competency</p>
                     </div>
                   </div>
 
                   {/* Schooling Card */}
-                  <div className="p-5 rounded-2xl bg-white/5 border border-white/5 flex gap-4">
+                  <div className="p-5 rounded-2xl bg-white/5 border border-white/5 flex gap-4 sm:col-span-2">
                     <FileText className="text-muted-foreground shrink-0 mt-1" size={20} />
                     <div>
-                      <h4 className="text-sm font-semibold text-foreground">SD Public School</h4>
-                      <p className="text-xs text-muted-foreground mt-1">Muzaffarnagar (Class X &amp; XII)</p>
-                      <p className="text-xs text-muted-foreground mt-1">Class X: 94.6% | Class XII: 81.2%</p>
+                      <h4 className="text-sm font-semibold text-foreground">SD Public School &bull; Muzaffarnagar</h4>
+                      <p className="text-xs text-muted-foreground mt-1">Class X: 94.6% &bull; Class XII: 81.2%</p>
                     </div>
                   </div>
 
@@ -1002,8 +1152,9 @@ export default function App() {
               {/* Header Bar */}
               <div className="bg-white/5 px-6 py-4 border-b border-white/10 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <FileText size={18} className="text-muted-foreground" />
-                  <span className="text-sm font-mono text-muted-foreground">Harshit_Pal_Resume.pdf</span>
+                  <FileText size={18} className="text-cyan-400" />
+                  <span className="text-sm font-mono text-foreground font-semibold">Harshit_Pal_Resume.pdf</span>
+                  <span className="hidden sm:inline text-xs text-muted-foreground font-mono">&bull; Updated with latest projects &amp; national qualifications</span>
                 </div>
                 <a 
                   href="/Harshit_Pal_Resume.pdf" 
@@ -1014,7 +1165,7 @@ export default function App() {
                 </a>
               </div>
               {/* PDF Embed Frame */}
-              <div className="w-full h-[600px] bg-zinc-950/60 relative">
+              <div className="w-full h-[640px] bg-zinc-950/60 relative">
                 <iframe 
                   src="/Harshit_Pal_Resume.pdf#toolbar=0&navpanes=0&scrollbar=1" 
                   className="w-full h-full border-none"
@@ -1045,7 +1196,7 @@ export default function App() {
                 { name: 'Frontend', id: 'frontend' },
                 { name: 'Backend', id: 'backend' },
                 { name: 'Databases', id: 'databases' },
-                { name: 'DevOps / IoT', id: 'devops' }
+                { name: 'Cloud / DevOps / IoT', id: 'devops' }
               ].map((category) => (
                 <button
                   key={category.id}
@@ -1091,101 +1242,155 @@ export default function App() {
 
         </section>
 
-        {/* 5. REACH US (CONTACT & RESUME) SECTION */}
-        <section id="reach-us" className="bg-white/[0.01] border-t border-border/10 py-24 sm:py-32">
+        {/* 5. ENGINEERING BLOG & ARTICLES SECTION */}
+        <section id="blog" className="bg-white/[0.01] border-y border-border/10 py-24 sm:py-32">
           <div className="max-w-7xl mx-auto px-6 sm:px-8">
+            
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 pb-8 border-b border-border/20">
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium mb-3">ENGINEERING INSIGHTS</p>
+                <h2 className="text-4xl sm:text-5xl font-normal text-foreground tracking-tight" style={{ fontFamily: "'Instrument Serif', serif" }}>
+                  Articles &amp; Architecture Notes
+                </h2>
+              </div>
+              <p className="text-muted-foreground max-w-md mt-4 md:mt-0 text-sm sm:text-base leading-relaxed">
+                Deep dives into sub-10ms RAG retrieval, agent-native persistent state, zero-GSM mesh protocols, and production OCR pipelines.
+              </p>
+            </div>
+
+            {/* Blog Posts Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {blogPosts.map((post) => (
+                <motion.article 
+                  key={post.id}
+                  whileHover={{ scale: 1.01, translateY: -4 }}
+                  className="liquid-glass rounded-3xl p-7 border border-white/10 flex flex-col justify-between group cursor-pointer"
+                  onClick={() => { window.location.hash = `#article-${post.id}` }}
+                >
+                  <div>
+                    <div className="flex items-center justify-between text-xs text-muted-foreground font-mono mb-4">
+                      <span className="text-cyan-400 font-semibold">{post.category}</span>
+                      <span>{post.readTime}</span>
+                    </div>
+
+                    <h3 className="text-2xl font-normal text-foreground mb-3 group-hover:text-zinc-300 transition-colors leading-snug" style={{ fontFamily: "'Instrument Serif', serif" }}>
+                      {post.title}
+                    </h3>
+
+                    <p className="text-muted-foreground text-sm leading-relaxed mb-6">
+                      {post.excerpt}
+                    </p>
+                  </div>
+
+                  <div>
+                    <div className="flex flex-wrap gap-2 mb-6">
+                      {post.tags.map((tag) => (
+                        <span key={tag} className="px-2.5 py-0.5 rounded-full text-2xs bg-white/5 text-muted-foreground border border-white/5 font-mono">
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+
+                    <div className="flex items-center justify-between pt-4 border-t border-white/5 text-xs">
+                      <span className="text-foreground font-semibold flex items-center gap-1.5 group-hover:underline">
+                        Read Full Technical Breakdown <ChevronRight size={14} />
+                      </span>
+                      <span className="text-muted-foreground font-mono">{post.date}</span>
+                    </div>
+                  </div>
+                </motion.article>
+              ))}
+            </div>
+
+          </div>
+        </section>
+
+        {/* 6. REACH US (CONTACT & RESUME) SECTION */}
+        <section id="reach-us" className="max-w-7xl mx-auto px-6 sm:px-8 py-24 sm:py-32">
+          <div className="max-w-7xl mx-auto">
             
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 sm:gap-16 items-start">
               
               {/* Contact Info & Resume View */}
               <div className="lg:col-span-5 space-y-8">
                 <div>
-                  <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium mb-3">REACH US</p>
+                  <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium mb-3 block">COLLABORATION &amp; INQUIRIES</span>
                   <h2 className="text-4xl sm:text-5xl font-normal text-foreground tracking-tight mb-4" style={{ fontFamily: "'Instrument Serif', serif" }}>
-                    Let&apos;s collaborate.
+                    Let&apos;s Build Together.
                   </h2>
-                  <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
-                    Have a project in mind, need a full-stack engineer, or want to discuss IoT solutions? Drop a message or download my resume.
+                  <p className="text-muted-foreground text-sm leading-relaxed">
+                    Have a project in mind, need a full-stack engineer, or want to discuss AI search and IoT mesh architectures? Drop a message or download my resume.
                   </p>
                 </div>
 
                 <div className="space-y-4">
-                  <a 
-                    href="mailto:harshit.pal.8.d.sdpsmzn@gmail.com" 
-                    className="flex items-center gap-4 text-muted-foreground hover:text-foreground transition-colors p-4 rounded-2xl bg-white/5 border border-white/5 group"
-                  >
-                    <Mail className="text-muted-foreground group-hover:scale-110 transition-transform" size={20} />
+                  <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5">
+                    <Mail className="text-muted-foreground shrink-0" size={20} />
                     <div>
-                      <span className="block text-2xs uppercase tracking-widest text-muted-foreground/60">Email</span>
-                      <span className="text-sm font-semibold">harshit.pal.8.d.sdpsmzn@gmail.com</span>
-                    </div>
-                  </a>
-
-                  <a 
-                    href="https://linkedin.com/in/harshit-pal" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="flex items-center gap-4 text-muted-foreground hover:text-foreground transition-colors p-4 rounded-2xl bg-white/5 border border-white/5 group"
-                  >
-                    <svg className="w-5 h-5 text-muted-foreground group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" /><rect width="4" height="12" x="2" y="9" /><circle cx="4" cy="4" r="2" /></svg>
-                    <div>
-                      <span className="block text-2xs uppercase tracking-widest text-muted-foreground/60">LinkedIn</span>
-                      <span className="text-sm font-semibold">linkedin.com/in/harshit-pal</span>
-                    </div>
-                  </a>
-
-                  <a 
-                    href="https://github.com/harshit-siraswal" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="flex items-center gap-4 text-muted-foreground hover:text-foreground transition-colors p-4 rounded-2xl bg-white/5 border border-white/5 group"
-                  >
-                    <svg className="w-5 h-5 text-muted-foreground group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" /><path d="M9 18c-4.51 2-5-2-7-2" /></svg>
-                    <div>
-                      <span className="block text-2xs uppercase tracking-widest text-muted-foreground/60">GitHub</span>
-                      <span className="text-sm font-semibold">github.com/harshit-siraswal</span>
-                    </div>
-                  </a>
-                </div>
-
-                {/* Resume Download Box */}
-                <div className="p-6 rounded-3xl liquid-glass border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                  <div className="flex items-center gap-4">
-                    <FileText className="text-foreground shrink-0" size={32} />
-                    <div>
-                      <h4 className="text-sm font-semibold text-foreground">Professional Resume</h4>
-                      <p className="text-xs text-muted-foreground mt-0.5">PDF Document • 3 Live apps</p>
+                      <span className="block text-2xs uppercase tracking-wider text-muted-foreground">Email Contact</span>
+                      <a href="mailto:harshit.pal.8.d.sdpsmzn@gmail.com" className="text-sm font-mono text-foreground hover:underline">
+                        harshit.pal.8.d.sdpsmzn@gmail.com
+                      </a>
                     </div>
                   </div>
-                  <a 
-                    href="/Harshit_Pal_Resume.pdf" 
-                    download="Harshit_Pal_Resume.pdf" 
-                    className="px-5 py-2.5 rounded-full bg-white text-background hover:bg-white/90 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg hover:shadow-white/5"
-                  >
-                    <Download size={14} /> Download PDF
-                  </a>
-                </div>
 
+                  <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5">
+                    <ExternalLink className="text-muted-foreground shrink-0" size={20} />
+                    <div>
+                      <span className="block text-2xs uppercase tracking-wider text-muted-foreground">Online Profiles</span>
+                      <div className="flex gap-4 mt-1 text-xs font-mono">
+                        <a href="https://github.com/harshit-siraswal" target="_blank" rel="noopener noreferrer" className="text-foreground hover:underline">
+                          GitHub
+                        </a>
+                        <span className="text-muted-foreground">&bull;</span>
+                        <a href="https://linkedin.com/in/harshit-pal" target="_blank" rel="noopener noreferrer" className="text-foreground hover:underline">
+                          LinkedIn
+                        </a>
+                        <span className="text-muted-foreground">&bull;</span>
+                        <a href="https://instagram.com/harshit_siraswal" target="_blank" rel="noopener noreferrer" className="text-pink-400 hover:underline">
+                          Instagram (@harshit_siraswal)
+                        </a>
+                        <span className="text-muted-foreground">&bull;</span>
+                        <a href="https://harshitpal.in" className="text-cyan-400 hover:underline">
+                          harshitpal.in
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Resume Download Box */}
+                  <div className="p-5 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 flex items-center justify-between">
+                    <div>
+                      <h4 className="text-sm font-semibold text-foreground">Professional Resume</h4>
+                      <p className="text-xs text-muted-foreground mt-0.5">PDF Document &bull; National Qualifications &amp; Live Apps</p>
+                    </div>
+                    <a 
+                      href="/Harshit_Pal_Resume.pdf" 
+                      download="Harshit_Pal_Resume.pdf" 
+                      className="px-4 py-2 rounded-xl bg-white text-background hover:bg-white/90 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md"
+                    >
+                      <Download size={14} /> Download
+                    </a>
+                  </div>
+                </div>
               </div>
 
-              {/* Contact Message Form */}
-              <div className="lg:col-span-7 liquid-glass rounded-3xl p-6 sm:p-8 border border-white/10">
+              {/* Contact Form */}
+              <div className="lg:col-span-7 liquid-glass rounded-3xl p-8 border border-white/10">
                 <h3 className="text-2xl font-normal text-foreground mb-6" style={{ fontFamily: "'Instrument Serif', serif" }}>
-                  Send a Message
+                  Send a Direct Message
                 </h3>
 
                 {formSubmitted ? (
-                  <div className="py-12 text-center space-y-4 flex flex-col items-center justify-center">
-                    <CheckCircle className="text-emerald-400" size={48} />
-                    <h4 className="text-lg font-semibold text-foreground">Message Dispatched</h4>
-                    <p className="text-muted-foreground text-sm max-w-sm">
-                      Thank you! Your message has been sent successfully. I will get back to you at the earliest convenience.
-                    </p>
+                  <div className="p-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center space-y-2">
+                    <CheckCircle className="text-emerald-400 mx-auto" size={32} />
+                    <h4 className="text-base font-semibold text-foreground">Message Received!</h4>
+                    <p className="text-xs text-muted-foreground">Thank you for reaching out. I will get back to you shortly.</p>
                   </div>
                 ) : (
-                  <form onSubmit={handleContactSubmit} className="space-y-6">
+                  <form onSubmit={handleContactSubmit} className="space-y-4">
                     <div>
-                      <label htmlFor="form-name" className="block text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">Name</label>
+                      <label htmlFor="form-name" className="block text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">Your Name</label>
                       <input 
                         type="text" 
                         id="form-name"
@@ -1193,7 +1398,7 @@ export default function App() {
                         value={formName}
                         onChange={(e) => setFormName(e.target.value)}
                         className="w-full bg-white/5 border border-white/10 focus:border-white/30 rounded-xl px-4 py-3 text-sm text-foreground outline-none transition-colors"
-                        placeholder="Your Name"
+                        placeholder="Harshit Sharma"
                       />
                     </div>
 
@@ -1244,19 +1449,20 @@ export default function App() {
       <footer className="w-full bg-background border-t border-border/10 py-12 relative z-10">
         <div className="max-w-7xl mx-auto px-8 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="text-muted-foreground text-xs font-mono">
-            &copy; 2026 HARSHIT PAL. Built with React + Tailwind v4 + TypeScript.
+            &copy; 2026 HARSHIT PAL. Built with React + Tailwind v4 + TypeScript. Deployed on Cloudflare &amp; Vercel.
           </div>
           <div className="flex gap-6 text-xs text-muted-foreground">
             <button onClick={() => scrollTo('home')} className="hover:text-foreground transition-colors font-medium cursor-pointer">Top</button>
             <button onClick={() => scrollTo('studio')} className="hover:text-foreground transition-colors font-medium cursor-pointer">Studio</button>
             <button onClick={() => scrollTo('about')} className="hover:text-foreground transition-colors font-medium cursor-pointer">About</button>
             <button onClick={() => scrollTo('journal')} className="hover:text-foreground transition-colors font-medium cursor-pointer">Journal</button>
+            <button onClick={() => scrollTo('blog')} className="hover:text-foreground transition-colors font-medium cursor-pointer">Articles</button>
             <button onClick={() => scrollTo('reach-us')} className="hover:text-foreground transition-colors font-medium cursor-pointer">Reach Us</button>
           </div>
         </div>
       </footer>
 
-      {/* 6. INTERACTIVE MEDIA LIGHTBOX / MODAL OVERLAY */}
+      {/* 7. INTERACTIVE MEDIA LIGHTBOX / MODAL OVERLAY */}
       {selectedImage && (
         <div 
           className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col items-center justify-center p-4 sm:p-8"
@@ -1331,7 +1537,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 7. SLIDING FULLSCREEN PROJECT OVERLAY (CASE STUDY PAGE) */}
+      {/* 8. SLIDING FULLSCREEN PROJECT OVERLAY (CASE STUDY PAGE) */}
       <AnimatePresence>
         {selectedProjectHash && activeProject && (
           <motion.div 
@@ -1367,6 +1573,15 @@ export default function App() {
                   className="text-xs text-muted-foreground hover:text-foreground font-mono uppercase tracking-wider transition-colors"
                 >
                   GitHub
+                </a>
+                <span className="text-[#D7E2EA]/20 font-mono">/</span>
+                <a 
+                  href="https://instagram.com/harshit_siraswal" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-xs text-pink-400/80 hover:text-pink-400 font-mono uppercase tracking-wider transition-colors"
+                >
+                  Instagram
                 </a>
               </div>
             </div>
@@ -1498,8 +1713,8 @@ export default function App() {
               {/* Description & Metadata Block (Col-Span-5) */}
               <div className="lg:col-span-5 space-y-8 text-left">
                 <div>
-                  <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-white/5 border border-white/10 text-foreground mb-3">
-                    {activeProject.category}
+                  <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-white/5 border border-white/10 text-foreground mb-3 font-mono">
+                    {activeProject.categoryLabel}
                   </span>
                   
                   <h2 className="text-3xl sm:text-4xl font-normal text-foreground leading-tight" style={{ fontFamily: "'Instrument Serif', serif" }}>
@@ -1590,6 +1805,85 @@ export default function App() {
               </div>
 
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 9. SLIDING FULLSCREEN BLOG ARTICLE READER */}
+      <AnimatePresence>
+        {selectedBlogId && activeBlog && (
+          <motion.div 
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '100%' }}
+            transition={{ type: 'spring', damping: 30, stiffness: 220 }}
+            className="fixed inset-0 z-40 bg-background/98 backdrop-blur-xl overflow-y-auto px-6 py-20 flex flex-col items-center"
+          >
+            {/* Reader Navigation Bar */}
+            <div className="max-w-4xl w-full flex items-center justify-between border-b border-border/10 pb-6 mb-10">
+              <button 
+                onClick={() => { window.location.hash = '#blog' }}
+                className="flex items-center gap-2 text-sm text-foreground hover:text-muted-foreground font-medium cursor-pointer transition-colors"
+              >
+                <ChevronLeft size={20} /> Back to Articles
+              </button>
+
+              <span className="text-xs text-muted-foreground font-mono">
+                {activeBlog.readTime} &bull; {activeBlog.date}
+              </span>
+            </div>
+
+            {/* Article Content */}
+            <article className="max-w-3xl w-full text-left space-y-8 pb-16">
+              <div className="space-y-4">
+                <span className="inline-block px-3 py-1 rounded-full text-xs font-mono bg-white/5 border border-white/10 text-cyan-400">
+                  {activeBlog.category}
+                </span>
+                <h1 className="text-3xl sm:text-5xl font-normal text-foreground leading-tight" style={{ fontFamily: "'Instrument Serif', serif" }}>
+                  {activeBlog.title}
+                </h1>
+                <div className="flex items-center gap-3 text-xs text-muted-foreground pt-2">
+                  <span>Author: <strong className="text-foreground">Harshit Pal</strong></span>
+                  <span>&bull;</span>
+                  <span>Published in <strong>Engineering Insights</strong></span>
+                </div>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-white/5 border border-white/10 text-muted-foreground text-sm leading-relaxed italic">
+                {activeBlog.excerpt}
+              </div>
+
+              <div className="space-y-6 text-muted-foreground text-sm sm:text-base leading-relaxed">
+                {activeBlog.content.map((paragraph, index) => (
+                  <p key={index} className="text-zinc-300 leading-relaxed">
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+
+              <div className="flex flex-wrap gap-2 pt-6 border-t border-white/10">
+                {activeBlog.tags.map((tag) => (
+                  <span key={tag} className="px-3 py-1 rounded-full text-xs bg-white/5 text-muted-foreground border border-white/5 font-mono">
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+
+              <div className="p-6 rounded-2xl bg-white/5 border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 mt-12">
+                <div>
+                  <h4 className="text-base font-semibold text-foreground">Interested in this architecture?</h4>
+                  <p className="text-xs text-muted-foreground mt-1">Let&apos;s discuss system designs, RAG retrieval, or mesh networks.</p>
+                </div>
+                <button 
+                  onClick={() => {
+                    window.location.hash = '#reach-us'
+                  }}
+                  className="px-6 py-2.5 rounded-full bg-white text-zinc-950 hover:bg-zinc-200 text-xs font-semibold cursor-pointer shrink-0"
+                >
+                  Contact Harshit
+                </button>
+              </div>
+            </article>
           </motion.div>
         )}
       </AnimatePresence>

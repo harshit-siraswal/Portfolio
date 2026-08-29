@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+
+# Directives for major AI and search crawlers
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+Sitemap: https://harshitpal.in/sitemap.xml

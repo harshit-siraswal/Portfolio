@@ -1,0 +1,16 @@
+{
+  "name": "Harshit Pal — Full-Stack Developer & AI/IoT Systems Engineer",
+  "short_name": "Harshit Pal",
+  "description": "Portfolio of Harshit Pal — Full-Stack Developer, AI/RAG Engineer, and IoT Specialist at KIET Ghaziabad.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#090d16",
+  "theme_color": "#090d16",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
