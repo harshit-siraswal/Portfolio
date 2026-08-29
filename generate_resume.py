@@ -63,7 +63,7 @@ def create_resume(output_path="public/Harshit_Pal_Resume.pdf"):
         '<b>2x NDA Qualified & 3x SSB Conference Out:</b> Cleared National Defence Academy entrance exam twice and attended 3 Services Selection Boards (demonstrated national-level leadership, psychological resilience, and crisis decision-making).',
         '<b>IOQM 2022 Qualified:</b> Merit Certificate Holder in Indian Olympiad Qualifier in Mathematics (awarded for top national mathematical problem-solving talent).',
         '<b>AWS Certified AI Practitioner:</b> Industry-recognized certification for generative AI architectures, foundational models, cloud compliance, and ML pipeline development.',
-        '<b>Innotech 2025 Hackathon Winner:</b> Awarded First-Year Innovator at KIET Ghaziabad for engineering functional IoT hardware mesh systems.',
+        '<b>Innotech 2025 Hackathon:</b> First-Year Innovator recognition at KIET Ghaziabad for engineering functional IoT hardware mesh systems.',
         '<b>JEE Main 2025:</b> 89.12 Percentile in national level engineering entrance examination.'
     ]
     for ach in achievements:
@@ -75,7 +75,7 @@ def create_resume(output_path="public/Harshit_Pal_Resume.pdf"):
     edu_table_data = [
         [
             Paragraph('<b>KIET Group of Institutions</b> — <i>B.Tech in CSE (Artificial Intelligence & Machine Learning)</i>', item_title_bold),
-            Paragraph('2025 – 2029 | SGPA: <b>7.83</b>', item_right_style)
+            Paragraph('2025 – 2029 | CGPA: <b>7.84</b> (Sem 1: 7.83, Sem 2: 7.86)', item_right_style)
         ],
         [
             Paragraph('<b>SD Public School</b> — <i>Senior Secondary (Class XII: 81.2%) & High School (Class X: 94.6%)</i>', item_title_bold),

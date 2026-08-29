@@ -925,11 +925,11 @@ export default function App() {
               
               {/* Profile Image & Quote Column */}
               <div className="lg:col-span-5 flex flex-col items-center">
-                <div className="relative w-64 sm:w-80 aspect-square rounded-3xl overflow-hidden p-2 liquid-glass border border-white/10 shadow-2xl">
+                <div className="relative w-64 sm:w-80 aspect-square rounded-3xl overflow-hidden p-2 liquid-glass border border-white/10 shadow-2xl group cursor-pointer">
                   <img 
                     src="/ghibli_coder.jpg" 
                     alt="Harshit Pal Coder Illustration" 
-                    className="w-full h-full object-cover rounded-2xl transition-all duration-700 hover:scale-105" 
+                    className="w-full h-full object-cover rounded-2xl grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" 
                   />
                 </div>
                 <div className="mt-8 text-center">
@@ -983,7 +983,7 @@ export default function App() {
                     <div>
                       <h4 className="text-sm font-semibold text-foreground">B.Tech in CSE (AIML)</h4>
                       <p className="text-xs text-muted-foreground mt-1">KIET Ghaziabad (2025 - 2029)</p>
-                      <p className="text-xs text-emerald-400 font-mono mt-1">CGPA: 7.83 (Sem 1)</p>
+                      <p className="text-xs text-emerald-400 font-mono mt-1">CGPA: 7.84 (Sem 1: 7.83 | Sem 2: 7.86)</p>
                     </div>
                   </div>
 
@@ -1011,12 +1011,12 @@ export default function App() {
                     <Award className="text-emerald-400 shrink-0 mt-1 group-hover:scale-110 transition-transform" size={20} />
                     <div className="flex-1">
                       <div className="flex items-center gap-1.5">
-                        <h4 className="text-sm font-semibold text-foreground">Innotech &apos;25</h4>
+                        <h4 className="text-sm font-semibold text-foreground">Innotech &apos;25 Hackathon</h4>
                         <ExternalLink size={12} className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
                       <p className="text-xs text-muted-foreground mt-1">KIET Ghaziabad (Hackathon/Expo)</p>
                       <p className="text-xs text-emerald-400 font-mono mt-1">First-Year Innovator</p>
-                      <p className="text-xs text-emerald-400 font-semibold mt-1">Click to view Certificate</p>
+                      <p className="text-xs text-muted-foreground/80 text-2xs mt-1">Click to view Certificate</p>
                     </div>
                   </button>
 
